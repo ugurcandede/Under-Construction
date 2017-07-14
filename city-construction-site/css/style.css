@@ -1,0 +1,28 @@
+body {
+  background: #c5ebae;
+  width: 100vw;
+  height: 100vh;
+  font-family: 'Oswald', sans-serif;
+  color: #8cb594;
+}
+
+h2 {
+  font-weight: normal;
+  width: 90%;
+  margin-left: 5%;
+  text-align: center;
+}
+
+svg {
+  margin: -15px auto 0;
+  display: table;
+  width: 80%;
+}
+
+#wheel, #top-toggle, #side-toggle, #button1, #button2 {
+	cursor: pointer;
+}
+
+.city path {
+	visibility: hidden;
+}
