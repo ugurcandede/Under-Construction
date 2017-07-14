@@ -1,0 +1,246 @@
+"use strict";
+
+THREE.LinesShader = {
+
+  uniforms: {
+
+    "tDiffuse": { type: "t", value: null },
+    "tSize": { type: "v2", value: new THREE.Vector2(300, 300) },
+    "center": { type: "v2", value: new THREE.Vector2(0.5, 0.5) },
+    "angle": { type: "f", value: 1.57 },
+    "scale": { type: "f", value: 2.0 }
+
+  },
+
+  vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+
+  fragmentShader: ["uniform vec2 center;", "uniform float angle;", "uniform float scale;", "uniform vec2 tSize;", "uniform sampler2D tDiffuse;", "varying vec2 vUv;", "float pattern(float a) {", "vec2 point=vec2(gl_FragCoord);", "float m=0.5;", "float im=1.0-m;", "bool t=a<0.2;", "bool t2=a<0.3;", "float stripes=sin((point.x*(t?1.:-1.) +point.y*(t?0.8:1.)*0.8)*1.5);", "float dots=sin( point.x*0.8 )*cos(point.y*0.8);", "dots=dots>0.5?0.0:dots<-0.5?-1.0:0.0;", "dots*=0.3;", "return clamp((a+im)+ ( t?dots:stripes ) * (1.0-a), 0.0,1.0);", "}", "void main() {", "vec4 color = texture2D( tDiffuse, vUv );", "float average = ( color.r + color.g + color.b ) / 3.0;", "float patternWeight=0.7;", "gl_FragColor = vec4( vec3( color * ((1.0-patternWeight) + pattern(average)*patternWeight) ), color.a );",
+
+  //"gl_FragColor = vec4( vec3( color ), color.a );",
+
+  "}"].join("\n")
+
+};
+
+/**
+ * @author alteredq / http://alteredqualia.com/
+ *
+ * Screen-space ambient occlusion shader
+ * - ported from
+ *   SSAO GLSL shader v1.2
+ *   assembled by Martins Upitis (martinsh) (https://devlog-martinsh.blogspot.com)
+ *   original technique is made by ArKano22 (http://www.gamedev.net/topic/550699-ssao-no-halo-artifacts/)
+ * - modifications
+ * - modified to use RGBA packed depth texture (use clear color 1,1,1,1 for depth pass)
+ * - refactoring and optimizations
+ */
+
+THREE.SSAOShader = {
+
+  uniforms: {
+
+    "tDiffuse": { type: "t", value: null },
+    "tDepth": { type: "t", value: null },
+    "size": { type: "v2", value: new THREE.Vector2(512, 512) },
+    "cameraNear": { type: "f", value: 1 },
+    "cameraFar": { type: "f", value: 100 },
+    "onlyAO": { type: "i", value: 0 },
+    "aoClamp": { type: "f", value: 0.5 },
+    "lumInfluence": { type: "f", value: 0.5 }
+
+  },
+
+  vertexShader: ["varying vec2 vUv;", "void main() {", "vUv = uv;", "gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );", "}"].join("\n"),
+
+  fragmentShader: ["uniform float cameraNear;", "uniform float cameraFar;", "uniform bool onlyAO;", // use only ambient occlusion pass?
+
+  "uniform vec2 size;", // texture width, height
+  "uniform float aoClamp;", // depth clamp - reduces haloing at screen edges
+
+  "uniform float lumInfluence;", // how much luminance affects occlusion
+
+  "uniform sampler2D tDiffuse;", "uniform sampler2D tDepth;", "varying vec2 vUv;",
+
+  // "#define PI 3.14159265",
+  "#define DL 2.399963229728653", // PI * ( 3.0 - sqrt( 5.0 ) )
+  "#define EULER 2.718281828459045",
+
+  // user variables
+
+  "const int samples = 8;", // ao sample count
+  "const float radius = 3.0;", // ao radius
+
+  "const bool useNoise = false;", // use noise instead of pattern for sample dithering
+  "const float noiseAmount = 0.0003;", // dithering amount
+
+  "const float diffArea = 0.4;", // self-shadowing reduction
+  "const float gDisplace = 0.4;", // gauss bell center
+
+  // RGBA depth
+
+  "float unpackDepth( const in vec4 rgba_depth ) {", "const vec4 bit_shift = vec4( 1.0 / ( 256.0 * 256.0 * 256.0 ), 1.0 / ( 256.0 * 256.0 ), 1.0 / 256.0, 1.0 );", "float depth = dot( rgba_depth, bit_shift );", "return depth;", "}",
+
+  // generating noise / pattern texture for dithering
+
+  "vec2 rand( const vec2 coord ) {", "vec2 noise;", "if ( useNoise ) {", "float nx = dot ( coord, vec2( 12.9898, 78.233 ) );", "float ny = dot ( coord, vec2( 12.9898, 78.233 ) * 2.0 );", "noise = clamp( fract ( 43758.5453 * sin( vec2( nx, ny ) ) ), 0.0, 1.0 );", "} else {", "float ff = fract( 1.0 - coord.s * ( size.x / 2.0 ) );", "float gg = fract( coord.t * ( size.y / 2.0 ) );", "noise = vec2( 0.25, 0.75 ) * vec2( ff ) + vec2( 0.75, 0.25 ) * gg;", "}", "return ( noise * 2.0  - 1.0 ) * noiseAmount;", "}", "float readDepth( const in vec2 coord ) {", "float cameraFarPlusNear = cameraFar + cameraNear;", "float cameraFarMinusNear = cameraFar - cameraNear;", "float cameraCoef = 2.0 * cameraNear;",
+
+  // "return ( 2.0 * cameraNear ) / ( cameraFar + cameraNear - unpackDepth( texture2D( tDepth, coord ) ) * ( cameraFar - cameraNear ) );",
+  "return cameraCoef / ( cameraFarPlusNear - unpackDepth( texture2D( tDepth, coord ) ) * cameraFarMinusNear );", "}", "float compareDepths( const in float depth1, const in float depth2, inout int far ) {", "float garea = 2.0;", // gauss bell width
+  "float diff = ( depth1 - depth2 ) * 100.0;", // depth difference (0-100)
+
+  // reduce left bell width to avoid self-shadowing
+
+  "if ( diff < gDisplace ) {", "garea = diffArea;", "} else {", "far = 1;", "}", "float dd = diff - gDisplace;", "float gauss = pow( EULER, -2.0 * dd * dd / ( garea * garea ) );", "return gauss;", "}", "float calcAO( float depth, float dw, float dh ) {", "float dd = radius - depth * radius;", "vec2 vv = vec2( dw, dh );", "vec2 coord1 = vUv + dd * vv;", "vec2 coord2 = vUv - dd * vv;", "float temp1 = 0.0;", "float temp2 = 0.0;", "int far = 0;", "temp1 = compareDepths( depth, readDepth( coord1 ), far );",
+
+  // DEPTH EXTRAPOLATION
+
+  "if ( far > 0 ) {", "temp2 = compareDepths( readDepth( coord2 ), depth, far );", "temp1 += ( 1.0 - temp1 ) * temp2;", "}", "return temp1;", "}", "void main() {", "vec2 noise = rand( vUv );", "float depth = readDepth( vUv );", "float tt = clamp( depth, aoClamp, 1.0 );", "float w = ( 1.0 / size.x )  / tt + ( noise.x * ( 1.0 - noise.x ) );", "float h = ( 1.0 / size.y ) / tt + ( noise.y * ( 1.0 - noise.y ) );", "float ao = 0.0;", "float dz = 1.0 / float( samples );", "float z = 1.0 - dz / 2.0;", "float l = 0.0;", "for ( int i = 0; i <= samples; i ++ ) {", "float r = sqrt( 1.0 - z );", "float pw = cos( l ) * r;", "float ph = sin( l ) * r;", "ao += calcAO( depth, pw * w, ph * h );", "z = z - dz;", "l = l + DL;", "}", "ao /= float( samples );", "ao = 1.0 - ao;", "vec3 color = texture2D( tDiffuse, vUv ).rgb;", "vec3 lumcoeff = vec3( 0.299, 0.587, 0.114 );", "float lum = dot( color.rgb, lumcoeff );", "vec3 luminance = vec3( lum );", "vec3 final = vec3( color * mix( vec3( ao )*3.5-2.0, vec3( 1.0 ), luminance * lumInfluence ) );", // mix( color * ao, white, luminance )
+
+  "if ( onlyAO ) {", "final = vec3( mix( vec3( ao ), vec3( 1.0 ), luminance * lumInfluence ) );", // ambient occlusion only
+  "final = vec3(vec3(ao));", "}", "gl_FragColor = min(vec4( final, 1.0 ),vec4(color,1.0));", "}"].join("\n")
+
+};
+
+init();
+function init() {
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+  var renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x0c3849);
+  document.body.appendChild(renderer.domElement);
+
+  function addLight(x, y, z, c, i) {
+    var light = new THREE.PointLight(c, i, 0);
+
+    light.position.set(x, y, z);
+    scene.add(light);
+    var sphere = new THREE.SphereGeometry(0.01, 8, 8);
+
+    /*light.add(
+      new THREE.Mesh(sphere,
+         new THREE.MeshBasicMaterial({color:c})
+      )
+    );*/
+  }
+
+  addLight(10, 5, 0, 0xffaa66, 5);
+  addLight(0, 5, 10, 0x5599aa, 2.5);
+
+  var cubesNum = 8;
+  var cubes = Array.from(Array(cubesNum)).map(function (cube, i) {
+    var geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5, 1, 1, 1);
+    var modifier = new THREE.SubdivisionModifier(1);
+    //modifier.modify(geometry);
+
+    var materialPhong = new THREE.MeshLambertMaterial({
+      color: "rgb(" + Math.round(i / (cubesNum - 1) * 255) + ",50,80)"
+    });
+
+    var materialNormal = new THREE.MeshNormalMaterial();
+
+    var cube = new THREE.Mesh(geometry, materialPhong);
+
+    scene.add(cube);
+    cube.position.x = Math.random() * 1;
+    cube.position.y = Math.random() * 1;
+    cube.position.z = Math.random() * 1;
+    var c = 'xyz'.split('');
+    cube.remain = c.splice(Math.round(Math.random() * 3), 1);
+    cube.change = c;
+
+    return cube;
+  });
+
+  camera.position.z = 2.2;
+  camera.position.y = 2.2;
+  camera.position.x = 2.2;
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+  // postprocessing
+  var composer = new THREE.EffectComposer(renderer);
+  var renderPass = new THREE.RenderPass(scene, camera);
+  composer.addPass(renderPass);
+
+  // Setup depth pass
+  var depthShader = THREE.ShaderLib["depthRGBA"];
+  var depthUniforms = THREE.UniformsUtils.clone(depthShader.uniforms);
+  var depthMaterial = new THREE.ShaderMaterial({ fragmentShader: depthShader.fragmentShader, vertexShader: depthShader.vertexShader,
+    uniforms: depthUniforms, blending: THREE.NoBlending });
+
+  var normalMaterial = new THREE.MeshNormalMaterial();
+
+  var pars = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter };
+  var depthRenderTarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, pars);
+
+  // Setup SSAO pass
+  var ssaoPass = new THREE.ShaderPass(THREE.SSAOShader);
+  //ssaoPass.uniforms[ "tDiffuse" ].value will be set by ShaderPass
+
+  ssaoPass.uniforms["tDepth"].value = depthRenderTarget;
+  ssaoPass.uniforms['size'].value.set(window.innerWidth, window.innerHeight);
+  ssaoPass.uniforms['cameraNear'].value = camera.near;
+  ssaoPass.uniforms['cameraFar'].value = camera.far;
+  ssaoPass.uniforms['onlyAO'].value = false;
+  ssaoPass.uniforms['aoClamp'].value = 0.3;
+  ssaoPass.uniforms['lumInfluence'].value = 0;
+  //ssaoPass.renderToScreen=true;
+
+  var dotscreen = new THREE.ShaderPass(THREE.LinesShader);
+  dotscreen.uniforms['scale'].value = 3;
+  composer.addPass(ssaoPass);
+  composer.addPass(dotscreen);
+  dotscreen.renderToScreen = true;
+
+  (function render() {
+    //composer.render();
+    // renderer.render(scene,camera);
+    scene.overrideMaterial = depthMaterial;
+    renderer.render(scene, camera, depthRenderTarget, true);
+    scene.overrideMaterial = null;
+    //renderer.render(scene,camera);
+    composer.render();
+    requestAnimationFrame(render);
+  })();
+
+  (function animate() {
+    cubes.forEach(function (cube, i) {
+      var delay = i * (0.05 / cubesNum);
+      var change = {
+        delay: delay,
+        ease: Quint.easeInOut
+      };
+      change[cube.change[0]] = 0.2 + Math.random() * 6;
+      change[cube.change[1]] = 0.1 + Math.random() * 1;
+      TweenMax.to(cube.scale, 0.55, change);
+
+      if (Math.random() > 0.5) {
+        TweenMax.to(cube.rotation, 0.55, {
+          delay: delay,
+          x: Math.round(Math.random() * 1) / 2 * Math.PI,
+          y: Math.round(Math.random() * 1) / 2 * Math.PI,
+          z: Math.round(Math.random() * 1) / 2 * Math.PI,
+          ease: Quint.easeInOut
+        });
+      }
+      TweenMax.to(cube.position, 0.55, {
+        delay: delay,
+        x: Math.random() * 1,
+        y: Math.random() * 1,
+        z: Math.random() * 1,
+        ease: Quint.easeInOut
+      });
+    });
+
+    TweenMax.delayedCall(0.47, animate);
+  })();
+
+  /* window.addEventListener('mousemove',function(event){
+     var a=event.clientX/window.innerWidth
+     camera.position.x=Math.cos(a)*2;
+     camera.position.z=Math.sin(a)*2;
+     camera.lookAt(new THREE.Vector3(0,0,0));
+   },false)*/
+}
