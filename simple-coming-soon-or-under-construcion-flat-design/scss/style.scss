@@ -1,0 +1,145 @@
+@mixin center($horizontal: true, $vertical: true) {
+  position: relative;
+
+  @if ($horizontal and $vertical) {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+  } @else if ($horizontal) {
+    left: 50%;
+    transform: translate(-50%, 0);
+
+  } @else if ($vertical) {
+    top: 50%;
+    transform: translate(0, -50%);
+  }
+}
+
+body{
+  background-color: #34495e;
+}
+
+header{
+  margin-top: 100px;
+  h1, h3{
+    text-align: center;
+    font-family: 'Architects Daughter', cursive;
+    color: #95a5a6;
+  }
+}
+
+.container{
+  width: 50%;
+  position: relative;
+  margin: 0 auto;
+  z-index: 1;
+}
+
+.wrapBox{
+    animation-delay: 1s;
+    animation-duration: 3s;
+}
+
+.box{
+  background-color: #e74c3c;
+  width: 100%;
+  padding: 20px;
+  position: relative;
+  box-sizing: border-box;
+  overflow: visible;
+  box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.24);
+  
+  label{
+    color: #FFF;
+    font-size:1.3em;
+    font-family: 'Dosis', sans-serif; 
+  }
+  
+  input[type="email"]{
+    background: transparent;
+    border: none;
+    border-bottom: solid 1px #FFF;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1.1em;
+    margin-top: 10px;
+    color: #FFF;
+    font-family: 'Dosis', sans-serif; 
+  }
+  
+  input[type="email"]:focus, input[type="email"]:active,
+  button[type="submit"]:focus, button[type="submit"]:active,{
+    outline: none;
+    /*border-bottom: solid 3px #FFF; */
+  }
+  
+  button[type="submit"]{
+    margin: 30px auto;
+    text-algin: center;
+    border: none;
+    background: transparent;
+    border: solid 3px #FFF;
+    padding: 5px 15%;
+    text-transform: uppercase;
+    color: #FFF;
+    font-size: 1.5em;
+    font-family: 'Architects Daughter',  cursive;
+    border-radius: 3px;
+    cursor: pointer;
+    @include center(true,false);
+    
+    .fa{
+      margin-left: 10px;
+    }
+  }
+  
+  button[type="submit"]:hover{
+    background-color: #FFF;
+    color: #e74c3c;
+  }
+  
+  .social{
+    margin: 0 auto;
+    text-align: center;
+    ul{
+      list-style-type: none;
+      margin-bottom: 0;
+      padding-left: 0;
+      li{
+        display: inline-block;
+        font-size: 2em;
+        color: #FFF;
+        margin-left: 25px;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.thanks{
+    position: absolute;
+    z-index: 999;
+    width: 350px;
+    height: 80px;
+    @include center(true, false);
+    display: none;
+    p{
+       font-size: 4em;
+       color: #FFF;
+       text-algin: center;
+       margin: 0 auto;
+       font-family: 'Architects Daughter', cursive;
+    }
+  }
+
+/* Responsive */
+/* Desktops and laptops ----------- */
+@media only screen
+and (max-width : 1024px) {
+  .container{
+    width: 60%;
+  }
+}
+ 
