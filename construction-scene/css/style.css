@@ -1,0 +1,47 @@
+body{
+  padding:0px;
+  margin:0px;
+}
+
+.scenewrap{
+  display:block;
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  
+}
+
+.scene{
+  display:block;
+  position:absolute;
+  width:100%;
+  height:600px;
+  left:0px;
+  bottom:0px;
+  min-width:2000px;
+  background-image:url('https://puu.sh/qnenY/1644135b9c.svg');
+  background-size:contain;
+  background-repeat:no-repeat;
+  
+}
+
+#Crane{
+  max-width:400px;
+  position:absolute;
+  left:10px;
+  top:-50px;
+  z-index:-1;
+}
+
+#greentruck{
+  max-width:250px;
+  margin-top:260px;
+}
+
+#Mixer{
+  max-width:130px;
+  position:absolute;
+  left:590px;
+  top:317px;
+}
