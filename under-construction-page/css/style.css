@@ -1,0 +1,215 @@
+/*General Style Reset*/
+html,body{
+    overflow: hidden;
+    font-size: 10px;
+    font-family: 'Raleway', sans-serif;
+}
+
+body{
+    margin: 0;
+}
+
+/*Helper Class Style*/
+
+.font-w-100{
+    font-weight: 100;
+}
+
+.font-w-200{
+    font-weight: 200;
+}
+
+.font-size-xl{
+    font-size: 8rem;
+}
+
+.color-white{
+    color: white;
+}
+
+.color-primary{
+    color: #193541;
+}
+
+.padding-1x{
+    padding: 1rem;
+}
+
+.padding-h-1x{
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.padding-v-1x{
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.padding-h-2x{
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.padding-v-2x{
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+.padding-2x{
+    padding: 2rem;
+}
+
+.bg-color-white{
+    background-color: white;
+}
+
+.text-right{
+    text-align: right;
+}
+
+/*Construction Section Style*/
+
+.const-msg-container{
+    background-image: url("http://ansarimofid.in/coming_soon_page/img/coming_soon_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+
+.const-msg{
+    padding: 3rem;
+    text-align: right;
+}
+
+.const-msg .const-text{
+    margin-top: 1rem;
+}
+
+.under-text{
+    display: inline-block;
+}
+
+.text-uppercase{
+    text-transform: uppercase;
+}
+
+
+/*Socials Links Style*/
+.const-msg .socials{
+    margin-top: 1rem;
+}
+
+.socials .links{
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.links li{
+    list-style: none;
+    margin: 0 0.5rem;
+    padding: 0.75rem;
+    font-size: 1.75rem;
+    /*background-color: white;*/
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border:1px solid white;
+    transition: all 0.35s;
+    cursor: pointer;
+}
+.links li:hover{
+    background-color: white;
+}
+
+.links li a{
+    color: white;
+}
+.links li:hover a{
+    color:#193541;
+}
+
+/*SVG GEAR*/
+/*Credits:Philip Meissner (https://codepen.io/pmeissner/pen/GoaXjP) */
+
+.const-msg .gears{
+    padding: 2rem 3.5rem;
+}
+.const-msg .text{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.51);
+}
+
+.svg-icon {
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.svg-icon-large {
+    width: 10em;
+    height: 10em;
+    animation-duration: 6000ms;
+    animation-name: spinLeft;
+}
+
+.svg-icon-small {
+    width: 6em;
+    height: 6em;
+    position: absolute;
+    margin-left: -15px;
+    margin-top: -25px;
+    animation-duration: 4000ms;
+    animation-name: spinRight;
+}
+
+.svg-icon path, .svg-icon polygon, .svg-icon rect {
+    fill: white;
+}
+
+.svg-icon-small path {
+    stroke: white;
+    stroke-width: .3;
+}
+
+@keyframes spinLeft {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spinRight {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+/*Media Queries*/
+
+@media (max-width: 700px) {
+    .const-msg-container{
+        justify-content: center;
+    }
+    .const-msg{
+        text-align: center;
+    }
+    .const-msg .text div{
+        font-size: 6rem;
+    }
+}
+
+@media (max-width: 500px) {
+    .const-msg .text div{
+        font-size: 5rem;
+    }
+}
