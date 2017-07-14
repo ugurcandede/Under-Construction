@@ -10,33 +10,33 @@ A glimpse of your current work under progress will do wonders and may be the fir
 
 ## [BabelJS UC](https://github.com/ugurcandede/Under-Construction/tree/master/BabelJS%20UC)
 
-![enter image description here](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/BabelJS%20UC/BabelJSUC.PNG)
+![BabelJS UC](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/BabelJS%20UC/BabelJSUC.PNG)
 
 ## [Canvas Line](https://github.com/ugurcandede/Under-Construction/tree/master/Canvas%20line)
-![enter image description here](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/Canvas%20line/Capture.PNG)
+![Canvas Line](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/Canvas%20line/Capture.PNG)
 
 ## [City Construction Site](https://github.com/ugurcandede/Under-Construction/tree/master/city-construction-site)
 
-![enter image description here](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/city-construction-site/Capture.PNG)
+![City Construction Site](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/city-construction-site/Capture.PNG)
 
-## [construction-scene](https://github.com/ugurcandede/Under-Construction/tree/master/construction-scene)
+## [Construction Scene](https://github.com/ugurcandede/Under-Construction/tree/master/construction-scene)
 
-![enter image description here](https://github.com/ugurcandede/Under-Construction/tree/master/construction-scene/Capture.PNG)
+![Construction Scene](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/construction-scene/Capture.PNG)
 
-## [simple-coming-soon-or-under-construcion-flat-design](https://github.com/ugurcandede/Under-Construction/tree/master/simple-coming-soon-or-under-construcion-flat-design)
+## [Simple Coming Soon or Under Construcion (Flat Design)](https://github.com/ugurcandede/Under-Construction/tree/master/simple-coming-soon-or-under-construcion-flat-design)
 
-![enter image description here](https://github.com/ugurcandede/Under-Construction/tree/master/simple-coming-soon-or-under-construcion-flat-design/Capture.PNG)
+![Simple Coming Soon or Under Construcion (Flat Design)](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/simple-coming-soon-or-under-construcion-flat-design/Capture.PNG)
 
-## [under%20building](https://github.com/ugurcandede/Under-Construction/tree/master/under%20building)
+## [Under Building](https://github.com/ugurcandede/Under-Construction/tree/master/under%20building)
 
-![enter image description here](https://github.com/ugurcandede/Under-Construction/tree/master/under%20building/Capture.PNG)
+![Under Building](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/under%20building/Capture.PNG)
 
-## [under%20building](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction-page)
+## [Under Construction Page](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction-page)
 
-![enter image description here](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction-page/Capture.PNG)
+![Under Construction Page](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/under-construction-page/Capture.PNG)
 
-## [under-construction](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction)
+## [Under Construction](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction)
 
-![enter image description here](https://github.com/ugurcandede/Under-Construction/tree/master/under-construction/Capture.PNG)
+![Under Construction](https://raw.githubusercontent.com/ugurcandede/Under-Construction/master/under-construction/Capture.PNG)
 
 
